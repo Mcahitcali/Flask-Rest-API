@@ -40,4 +40,6 @@ class Base_URL(Resource):
         return f"<h1>Url is converted</h1></br>Converted Url: {file_path}", 200
         
 api.add_resource(Base_URL, "/url/<string:url_id>")
-application.run(debug=True)
+
+if __name__ == '__main__':
+    application.run(debug=True, use_reloader=True)
