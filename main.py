@@ -3,11 +3,10 @@ from flask import Flask
 from flask_restful import Api, Resource
 from pathlib import Path
 import youtube_dl
-import glob
+import glob, argparse, os
 
-
-application = Flask(__name__)
-api = Api(app=application)
+APP = Flask(__name__)
+api = Api(app=APP)
 
 ydl_path = str(Path().absolute())+"/File/"
 ydl_opts = {
@@ -20,7 +19,7 @@ ydl_opts = {
     }],
 }
 
-@application.route("/")
+@APP.route("/")
 def home():
     html = ''
     files = [f for f in glob.glob(ydl_path + "**/*.mp3", recursive=True)]
@@ -42,4 +41,19 @@ class Base_URL(Resource):
 api.add_resource(Base_URL, "/url/<string:url_id>")
 
 if __name__ == '__main__':
-    application.run(debug=True, use_reloader=True)
+
+    PARSER = argparse.ArgumentParser(
+        description="Seans-Python-Flask-REST-Boilerplate")
+
+    PARSER.add_argument('--debug', action='store_true',
+                        help="Use flask debug/dev mode with file change reloading")
+    ARGS = PARSER.parse_args()
+
+    PORT = int(os.environ.get('PORT', 5000))
+
+    if ARGS.debug:
+        print("Running in debug mode")
+        CORS = CORS(APP)
+        APP.run(host='0.0.0.0', port=PORT, debug=True)
+    else:
+        APP.run(host='0.0.0.0', port=PORT, debug=False)
